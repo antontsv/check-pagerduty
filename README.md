@@ -1,0 +1,1 @@
+Simple checks for PagerDuty
