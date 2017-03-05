@@ -8,9 +8,11 @@ import (
 )
 
 /*
+// actual incidentsMapper is defined in credentials.go
+// along with userID, serviceID and  authtoken strings
 var incidentsMapper = map[string]string{
-	"Alert closed":                    "resolved",
-	"Alert open":           		   "acknowledged",
+	"Alert closed":  "resolved",
+	"Alert open":    "acknowledged",
 }
 */
 
@@ -44,9 +46,9 @@ func main() {
 						Status: status,
 					}
 					go func() {
-						err = client.ManageIncidents(actorEmail, []pagerduty.Incident{updatedIncident})
-						if err != nil {
-							fmt.Println(err)
+						e := client.ManageIncidents(actorEmail, []pagerduty.Incident{updatedIncident})
+						if e != nil {
+							fmt.Println(e)
 						}
 					}()
 					break
