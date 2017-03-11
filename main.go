@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strings"
+	"sync"
 
 	"github.com/PagerDuty/go-pagerduty"
 )
@@ -33,6 +34,7 @@ func main() {
 			fmt.Println("No incidents")
 			return
 		}
+		var wg sync.WaitGroup
 		for _, incident := range resp.Incidents {
 			fmt.Println(incident.Summary)
 			for summaryEntry, status := range incidentsMapper {
@@ -45,15 +47,18 @@ func main() {
 						},
 						Status: status,
 					}
-					go func() {
-						e := client.ManageIncidents(actorEmail, []pagerduty.Incident{updatedIncident})
+					wg.Add(1)
+					go func(incident pagerduty.Incident) {
+						defer wg.Done()
+						e := client.ManageIncidents(actorEmail, []pagerduty.Incident{incident})
 						if e != nil {
 							fmt.Println(e)
 						}
-					}()
+					}(updatedIncident)
 					break
 				}
 			}
 		}
+		wg.Wait()
 	}
 }
